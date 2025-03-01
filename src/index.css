@@ -1,0 +1,197 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+
+    --radius: 0.6rem;
+
+    --editor-background: 0 0% 100%;
+    --editor-foreground: 240 10% 3.9%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 240 5% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 5.9% 15%;
+    --sidebar-ring: 240 5% 64.9%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    --editor-background: 240 3% 11%;
+    --editor-foreground: 0 0% 98%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 10% 3.9%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 240 4.8% 85.9%;
+    --sidebar-ring: 240 5% 64.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .editor-container {
+    @apply relative w-full h-full overflow-auto bg-editor-background text-editor-foreground p-8 rounded-lg shadow-sm transition-all duration-300 ease-in-out;
+  }
+
+  .ql-toolbar {
+    @apply sticky top-0 z-10 bg-background/90 backdrop-blur-sm border border-border rounded-t-lg !important;
+  }
+
+  .ql-container {
+    @apply border border-t-0 border-border rounded-b-lg min-h-[60vh] !important;
+  }
+
+  .ql-editor {
+    @apply p-6 text-base leading-relaxed focus:outline-none !important;
+  }
+
+  .document-item {
+    @apply border-b border-sidebar-border last:border-b-0 p-4 cursor-pointer transition-all duration-300 ease-in-out;
+  }
+
+  .document-item:hover {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground;
+  }
+
+  .document-item.active {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground border-l-4 border-l-sidebar-primary;
+  }
+
+  .sidebar-search {
+    @apply bg-sidebar-accent/50 border border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/50 rounded-lg;
+  }
+}
+
+/* Special styling for Quill editor */
+.ql-snow .ql-stroke {
+  @apply stroke-foreground/70;
+}
+
+.ql-snow .ql-fill {
+  @apply fill-foreground/70;
+}
+
+.ql-snow .ql-picker {
+  @apply text-foreground/70;
+}
+
+.ql-snow .ql-picker-options {
+  @apply bg-background border border-border;
+}
+
+.ql-snow .ql-tooltip {
+  @apply bg-background text-foreground border border-border shadow-md;
+}
+
+/* Animation classes */
+.animate-enter {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-leave {
+  animation: fade-out 0.3s ease-out;
+}
+
+.animate-slide-enter {
+  animation: slide-in 0.3s ease-out;
+}
+
+.animate-slide-leave {
+  animation: slide-out 0.3s ease-out;
+}
+
+/* Typography enhancements */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-medium tracking-tight;
+}
+
+h1 {
+  @apply text-3xl sm:text-4xl;
+}
+
+h2 {
+  @apply text-2xl sm:text-3xl;
+}
+
+h3 {
+  @apply text-xl sm:text-2xl;
+}
+
+/* Disable text selection during animations */
+.select-none-during-animation {
+  user-select: none;
+}
