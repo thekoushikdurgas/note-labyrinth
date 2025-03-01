@@ -1,42 +1,19 @@
 
-import axios from 'axios';
 import { Document, DocumentWithoutId, ApiResponse } from '../types';
-
-// In a real application, this would come from environment variables
-const API_URL = 'http://localhost:5000/api';
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add response interceptor for error handling
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error);
-    return Promise.reject(error);
-  }
-);
+import supabase from './supabase';
 
 // Document API functions
 export const documentApi = {
-  // For demo purposes, we'll use localStorage as a temporary backend
-  // In a real application, these would make actual API calls
-  
   getAllDocuments: async (): Promise<ApiResponse<Document[]>> => {
     try {
-      // Simulate API call
-      const storedDocs = localStorage.getItem('documents');
-      const documents: Document[] = storedDocs ? JSON.parse(storedDocs) : [];
+      const { data, error } = await supabase
+        .from('documents')
+        .select('*')
+        .order('updatedAt', { ascending: false });
       
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      if (error) throw error;
       
-      return { success: true, data: documents };
+      return { success: true, data: data as Document[] };
     } catch (error) {
       console.error('Error getting documents:', error);
       return { 
@@ -48,22 +25,22 @@ export const documentApi = {
   
   getDocumentById: async (id: string): Promise<ApiResponse<Document>> => {
     try {
-      // Simulate API call
-      const storedDocs = localStorage.getItem('documents');
-      const documents: Document[] = storedDocs ? JSON.parse(storedDocs) : [];
-      const document = documents.find(doc => doc._id === id);
+      const { data, error } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('_id', id)
+        .single();
       
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 300));
+      if (error) throw error;
       
-      if (!document) {
+      if (!data) {
         return { 
           success: false, 
           error: 'Document not found'
         };
       }
       
-      return { success: true, data: document };
+      return { success: true, data: data as Document };
     } catch (error) {
       console.error('Error getting document:', error);
       return { 
@@ -75,10 +52,6 @@ export const documentApi = {
   
   createDocument: async (document: DocumentWithoutId): Promise<ApiResponse<Document>> => {
     try {
-      // Simulate API call
-      const storedDocs = localStorage.getItem('documents');
-      const documents: Document[] = storedDocs ? JSON.parse(storedDocs) : [];
-      
       // Create a new document with a unique ID
       const newDocument: Document = {
         ...document,
@@ -87,14 +60,15 @@ export const documentApi = {
         updatedAt: new Date().toISOString(),
       };
       
-      // Add to "database"
-      documents.push(newDocument);
-      localStorage.setItem('documents', JSON.stringify(documents));
+      const { data, error } = await supabase
+        .from('documents')
+        .insert(newDocument)
+        .select()
+        .single();
       
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      if (error) throw error;
       
-      return { success: true, data: newDocument };
+      return { success: true, data: data as Document };
     } catch (error) {
       console.error('Error creating document:', error);
       return { 
@@ -106,33 +80,19 @@ export const documentApi = {
   
   updateDocument: async (id: string, document: Partial<Document>): Promise<ApiResponse<Document>> => {
     try {
-      // Simulate API call
-      const storedDocs = localStorage.getItem('documents');
-      const documents: Document[] = storedDocs ? JSON.parse(storedDocs) : [];
+      const { data, error } = await supabase
+        .from('documents')
+        .update({
+          ...document,
+          updatedAt: new Date().toISOString(),
+        })
+        .eq('_id', id)
+        .select()
+        .single();
       
-      const documentIndex = documents.findIndex(doc => doc._id === id);
+      if (error) throw error;
       
-      if (documentIndex === -1) {
-        return { 
-          success: false, 
-          error: 'Document not found'
-        };
-      }
-      
-      // Update document
-      const updatedDocument: Document = {
-        ...documents[documentIndex],
-        ...document,
-        updatedAt: new Date().toISOString(),
-      };
-      
-      documents[documentIndex] = updatedDocument;
-      localStorage.setItem('documents', JSON.stringify(documents));
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      return { success: true, data: updatedDocument };
+      return { success: true, data: data as Document };
     } catch (error) {
       console.error('Error updating document:', error);
       return { 
@@ -144,16 +104,12 @@ export const documentApi = {
   
   deleteDocument: async (id: string): Promise<ApiResponse<void>> => {
     try {
-      // Simulate API call
-      const storedDocs = localStorage.getItem('documents');
-      const documents: Document[] = storedDocs ? JSON.parse(storedDocs) : [];
+      const { error } = await supabase
+        .from('documents')
+        .delete()
+        .eq('_id', id);
       
-      const newDocuments = documents.filter(doc => doc._id !== id);
-      
-      localStorage.setItem('documents', JSON.stringify(newDocuments));
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 400));
+      if (error) throw error;
       
       return { success: true };
     } catch (error) {
@@ -167,20 +123,15 @@ export const documentApi = {
   
   searchDocuments: async (searchTerm: string): Promise<ApiResponse<Document[]>> => {
     try {
-      // Simulate API call
-      const storedDocs = localStorage.getItem('documents');
-      const documents: Document[] = storedDocs ? JSON.parse(storedDocs) : [];
+      const { data, error } = await supabase
+        .from('documents')
+        .select('*')
+        .or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`)
+        .order('updatedAt', { ascending: false });
       
-      // Simple search implementation
-      const filteredDocs = documents.filter(doc => 
-        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        doc.content.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      if (error) throw error;
       
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      return { success: true, data: filteredDocs };
+      return { success: true, data: data as Document[] };
     } catch (error) {
       console.error('Error searching documents:', error);
       return { 
@@ -191,4 +142,4 @@ export const documentApi = {
   }
 };
 
-export default api;
+export default { documentApi };
